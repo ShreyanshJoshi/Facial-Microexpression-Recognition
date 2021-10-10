@@ -7,7 +7,7 @@ from utils.common import get_next_three
 
 dir = "C:/Users/Shreyansh/Desktop/Microexpression Detection/SAMM/"
 
-# Returns 9 equidistant frames (including onset, apex and offset frames) between onset frame to offset frame
+'''Returns 9 equidistant frames (including onset, apex and offset frames) between onset frame to offset frame.'''
 def get_frames_3dcnn(i):      
     frames = []
     img_arr1 = img_to_array(load_img(dir + i[0], color_mode="grayscale", target_size=(128,128)))    # Onset frame
@@ -30,7 +30,7 @@ def get_frames_3dcnn(i):
     return frames
 
 
-# Returns list of classes, with labels and the paths of corresponding 9 frames
+'''Returns list of classes, with labels and the paths of corresponding 9 frames.'''
 def get_classes_list_with_9frames_and_labels_2dimages_open(classes, type):
     if type=="multiclass":
         happiness = []
@@ -98,7 +98,7 @@ def get_classes_list_with_9frames_and_labels_2dimages_open(classes, type):
         raise ValueError("Invalid argument")
 
 
-# Divided the shuffled dataset into train (which is later divided into train and val), and test sets in a particular ratio and returns the shuffled sets.
+'''Divides the shuffled dataset into train (which is later divided into train and val), and test sets in a particular ratio and returns the shuffled sets.'''
 def get_train_test_list_2dimages_open(classes, type):
     if type=="multiclass":
         random.shuffle(classes[0])
@@ -151,7 +151,10 @@ def get_train_test_list_2dimages_open(classes, type):
         raise ValueError("Invalid argument")
         
 
-# Below function makes predictions on the test set and prints the accuracy. Furthermore in case of multiclass classification, it also prints the confusion matrix, helping analyze better the predictions model has made and how it can be improved. Since, this is majority voting policy, predictions are made on each of the 9 frames (in order from onset to offset) of an entry in the test set. A particular entry in the test set is said to be correctly predicted by our model only if it correctly predicts the class of majority of the 9 frames that entry has.
+'''Below function makes predictions on the test set and prints the accuracy. Furthermore in case of multiclass classification, it also prints the confusion matrix,
+helping analyze better the predictions model has made and how it can be improved. Since, this function is used in case of majority voting policy, predictions are 
+made on each of the 9 frames of an entry in the test set (in order from onset to offset). A particular entry in the test set is said to be correctly predicted by 
+our model only if it correctly predicts the class of majority, of the 9 frames (at least 5 correct) that the entry has.'''
 def test_predictions(test_list, model, type="binary"):
     correct=0
     wrong=0

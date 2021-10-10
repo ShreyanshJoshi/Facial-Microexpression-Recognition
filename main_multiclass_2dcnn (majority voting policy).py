@@ -17,7 +17,7 @@ def main():
     df = pd.read_csv(r'C:\Users\Shreyansh\Desktop\Microexpression Detection\samm_data.csv')
     print(df.head())
 
-    # A sample image
+    '''A sample image'''
     img = image.load_img(r"C:\Users\Shreyansh\Desktop\Microexpression Detection\SAMM\017\017_3_3\017_1395.jpg")
     plt.imshow(img)
 
@@ -41,7 +41,6 @@ def main():
     contempt1 = output[5]
     sadness1 = output[6]
 
-    # Printing a sample element of the returned list for checking the format
     print(np.array(anger1).shape)
     print(anger1[0])
 
@@ -51,7 +50,7 @@ def main():
     print(len(train_list))
     print(len(test_list))
 
-    # Augmentation (of training dataset) is required in case of multiclass as the distribution of images in different classes is very diverse and imbalanced
+    '''Augmentation (of training dataset) is required in case of multiclass as the distribution of images in different classes is very diverse and imbalanced.'''
     output = augment_2dimages_open(train_list, "multiclass", augment=True)
     data = np.array(output[0])
     labels = np.array(output[1])
@@ -62,7 +61,7 @@ def main():
 
     labels = np_utils.to_categorical(labels, 7)
 
-    # Splitting the data into training and validation sets in the ratio 75:25
+    '''Splitting the data into training and validation sets in the ratio 75:25.'''
     (trainX, valX, trainY, valY) = train_test_split(data, labels, test_size=0.25, shuffle=True, stratify=labels, random_state=2)
 
     print(trainX.shape)
@@ -70,11 +69,11 @@ def main():
     print(trainY.shape)
     print(valY.shape)
 
-    # Load model
+    '''Load model.'''
     model = load_model_multiclass()
     print(model.summary())
 
-    # Storing training parameters
+    '''Storing training parameters.'''
     p = dict()
     p['lr'] = 0.004
     p['loss_function'] = 'categorical_crossentropy'
@@ -86,9 +85,10 @@ def main():
 
     model_fit = train_model(model, trainX, trainY, valX, valY, p)
 
+    '''Plotting graphs of training and validation (both loss and accuracy), for visualization.'''
     plot_training_graphs(model_fit)
 
-    # Making predictions and finding test accuracy
+    '''Making predictions and finding accuracy on the test set.'''
     test_predictions(test_list, model, "multiclass")
 
 

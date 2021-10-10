@@ -4,7 +4,9 @@ from tensorflow.python.keras import regularizers
 from keras.layers import Dropout, Flatten, Dense,BatchNormalization
 from keras.layers import Conv3D, MaxPool3D
 
-# Binary classification, 3D CNN architecture that gave the best results. B'se of the extremely small size of the dataset, even after augmentation, and perhaps the simplicity associated with binary classification, deeper models were found to overfit very easily (predicting all as negative- bias due to class imbalance). To mitigate that, a very shallow architecture has been used, along with intensive regularization in the form of dropouts and batchnorm.
+'''Binary classification, 3D CNN architecture that gave the best results. B'se of the extremely small size of the dataset (even after augmentation), and perhaps 
+because of the simplicity associated with binary classification, deeper models were found to overfit very easily (predicting all as negative: bias due to class 
+imbalance). To mitigate that, a very shallow architecture has been used, along with intensive regularization in the form of dropouts and batchnorm.'''
 def load_model_binary():
     inputs = keras.Input((128, 128, 9, 1))
 
@@ -22,7 +24,8 @@ def load_model_binary():
     return model
 
 
-# Multiclass classification, 3D CNN architecture that gave the best results. Since, multiclass classification is intrinsically more complicated than binary classification, deeper models have been used to understand & learn the complex underlying patterns. 
+'''Multiclass classification, 3D CNN architecture that gave the best results. Since, multiclass classification is intrinsically more complicated than binary 
+classification, a deeper architecture has been used to understand & learn the complex underlying patterns. '''
 def load_model_multiclass():
     inputs = keras.Input((128, 128, 9, 1))
 

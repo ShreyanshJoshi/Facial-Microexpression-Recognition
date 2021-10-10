@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 dir = "C:/Users/Shreyansh/Desktop/Microexpression Detection/SAMM/"
 
-# Returns the correct subject number (as a string)
+'''Returns the correct subject number (as a string).'''
 def get_subject(sub):                                       
     if sub < 10:
         return '00' + str(sub)
@@ -17,8 +17,8 @@ def get_subject(sub):
         return '0' + str(sub)
 
 
- # Returns the correct onset frame number (as a string)
-def get_on_frame(df, new_sub, filename, onframe):          
+'''Returns the correct onset frame number (as a string).'''
+def get_on_frame(new_sub, filename, onframe):          
     if onframe < 1000:
         if os.path.exists(dir + new_sub + '/' + filename + '/' + new_sub + '_0' + str(onframe) + '.jpg') ==True:
             return "0" + str(onframe)
@@ -37,8 +37,8 @@ def get_on_frame(df, new_sub, filename, onframe):
             return -1
 
 
-# Returns the correct apex frame number (as a string)
-def get_apex_frame(df, new_sub, filename, apexframe):       
+'''Returns the correct apex frame number (as a string).'''
+def get_apex_frame(new_sub, filename, apexframe):       
     if apexframe < 1000:
         if os.path.exists(dir + new_sub + '/' + filename + '/' + new_sub + '_0' + str(apexframe) + '.jpg') ==True:
             return "0" + str(apexframe)
@@ -57,8 +57,8 @@ def get_apex_frame(df, new_sub, filename, apexframe):
             return -1
 
 
-# Returns the correct offset frame number (as a string)
-def get_off_frame(df, new_sub, filename, offframe):       
+'''Returns the correct offset frame number (as a string).'''
+def get_off_frame(new_sub, filename, offframe):       
     if offframe < 1000:
         if os.path.exists(dir + new_sub + '/' + filename + '/' + new_sub + '_0' + str(offframe) + '.jpg') ==True:
             return "0" + str(offframe)
@@ -76,10 +76,12 @@ def get_off_frame(df, new_sub, filename, offframe):
         else:
             return -1
 
-# Following functions in the below class are used to augment images using Numpy.
+'''Following functions in the below class are used to augment images using Numpy. They have been grouped together into a class for convenience, and hence
+each function is a static method (a method that is bound to the class and not the object of the class). '''
 class Augmentation():
 
-    # Translations are simple shifting of a picture in some direction. Below function accepts desired direction to move, amount of pixels for shift and behaviour of the patch that left empty when the image has been shifted. I prefer to roll patch that disappears on the edge to the other side of the image.
+    '''Translations are simple shifting of a picture in some direction. Below function accepts desired direction to move, amount of pixels for shift and behaviour 
+    of the patch that is left empty when the image has been shifted. By default, the patch that disappears on the edge is rolled to the other side of the image. '''
     @staticmethod
     def translate(img, shift=10, direction='right', roll=True):
         assert direction in ['right', 'left', 'down', 'up'], 'Directions should be top|up|left|right'
@@ -111,7 +113,8 @@ class Augmentation():
                 
         return img1
 
-    # The quite effective way to augment image is to rotate it a random degrees. The “empty” space in the corners has been filled with the mean of colours from the corner-patch.
+    '''The quite effective way to augment image is to rotate it a random degrees. The “empty” space in the corners has been filled with the mean of colours from 
+    the corner-patch. '''
     @staticmethod
     def rotate_img(img, angle, bg_patch=(15,15)):
         assert len(img.shape) <= 3, "Incorrect image shape"
@@ -128,16 +131,19 @@ class Augmentation():
 
         return img
 
-    # After applying translations and rotations it is helpful to add additional randomness in the augmented images by applying gaussian noise.
+    '''After applying translations and rotations it is helpful to add additional randomness in the augmented images by applying gaussian noise. '''
     @staticmethod
     def gaussian_noise(img, mean=5, sigma=1):
         noisy_img = img + np.random.normal(mean, sigma, img.shape)
         noisy_img_clipped = np.clip(noisy_img, 0, 255)  
         return noisy_img_clipped
 
-    # Another interesting way to change original sample is to somehow distort it. As a simple example we can apply continuous shift of the rows or columns of our image guided by trigonometric functions (cosine or sinus). The resulting image would be “wavy” in horizontal or vertical directions. By tuning function parameters we can achieve required distortion power that produce different image with the same content. 
+    '''Another interesting way to change original sample is to somehow distort it. As a simple example we can apply continuous shift of the rows or columns of our 
+    image guided by trigonometric functions (cosine or sinus). The resulting image would be “wavy” in horizontal or vertical directions. By tuning function 
+    parameters we can achieve required distortion power that produce different image with the same content. '''
 
-    # However, since facial microexpressions are very subtle, we won't be distorting the image during augmentation...it was found to obscure certain features that model learns from, after some experimentations.
+    '''However, since facial microexpressions are very subtle, we won't be distorting the image during augmentation...distortion was found to obscure certain 
+    features that model learns from, after some experimentation. '''
     @staticmethod
     def distort(img, orientation='horizontal', func=np.sin, x_scale=0.02, y_scale=3):
         
@@ -160,7 +166,7 @@ class Augmentation():
         return img_dist
 
 
-# Returns 3 equally spaced frames between end_path1 and end_path2
+'''Returns 3 equally spaced frames between end_path1 and end_path2. '''
 def get_next_three(end_path1, end_path2):             
     next_three = []
 
@@ -222,7 +228,7 @@ def get_next_three(end_path1, end_path2):
     return next_three
 
 
-# Returns class-wise list, where each entry contains the path of onset, apex and offset frames of one instance in the dataset
+'''Returns class-wise list, where each entry contains the path of onset, apex and offset frames of one instance in the dataset. '''
 def get_classes_list(df, type):
     if type=="multiclass":
         happiness = []
@@ -236,9 +242,9 @@ def get_classes_list(df, type):
         for i in range(len(df)) :
             new_sub = get_subject(df.loc[i, "Subject"])
 
-            new_onframe = get_on_frame(df, new_sub, str(df.loc[i, "Filename"]), df.loc[i, "Onset Frame"])
-            new_apexframe = get_apex_frame(df, new_sub, str(df.loc[i, "Filename"]), df.loc[i, "Apex Frame"])
-            new_offframe = get_off_frame(df, new_sub, str(df.loc[i, "Filename"]), df.loc[i, "Offset Frame"])
+            new_onframe = get_on_frame(new_sub, str(df.loc[i, "Filename"]), df.loc[i, "Onset Frame"])
+            new_apexframe = get_apex_frame(new_sub, str(df.loc[i, "Filename"]), df.loc[i, "Apex Frame"])
+            new_offframe = get_off_frame(new_sub, str(df.loc[i, "Filename"]), df.loc[i, "Offset Frame"])
 
             if new_onframe==-1 or new_apexframe==-1 or new_offframe==-1:
                 continue
@@ -293,9 +299,9 @@ def get_classes_list(df, type):
         for i in range(len(df)) :
             new_sub = get_subject(df.loc[i, "Subject"])
 
-            new_onframe = get_on_frame(df, new_sub, str(df.loc[i, "Filename"]), df.loc[i, "Onset Frame"])
-            new_apexframe = get_apex_frame(df, new_sub, str(df.loc[i, "Filename"]), df.loc[i, "Apex Frame"])
-            new_offframe = get_off_frame(df, new_sub, str(df.loc[i, "Filename"]), df.loc[i, "Offset Frame"])
+            new_onframe = get_on_frame(new_sub, str(df.loc[i, "Filename"]), df.loc[i, "Onset Frame"])
+            new_apexframe = get_apex_frame(new_sub, str(df.loc[i, "Filename"]), df.loc[i, "Apex Frame"])
+            new_offframe = get_off_frame(new_sub, str(df.loc[i, "Filename"]), df.loc[i, "Offset Frame"])
 
             if new_onframe==-1 or new_apexframe==-1 or new_offframe==-1:
                 continue
@@ -318,7 +324,7 @@ def get_classes_list(df, type):
         raise ValueError("Invalid argument")
 
 
-# Compiles, trains the model with the given hyperparameters and returns the trained model
+'''Compiles, trains the model with the given hyperparameters and returns the trained model.'''
 def train_model(model, trainX, trainY, valX, valY, p):
     lr_schedule = keras.optimizers.schedules.ExponentialDecay(
         p['lr'], decay_steps=100000, decay_rate=0.96, staircase=True
@@ -333,7 +339,7 @@ def train_model(model, trainX, trainY, valX, valY, p):
     return model_fit
 
 
-# Plots 2 plots after training, for both training and validation process -  epoch vs accuracy and epoch vs loss
+'''Plots 2 plots after training, for both training and validation process -  epoch vs accuracy and epoch vs loss.'''
 def plot_training_graphs(model_fit):
     plt.plot(model_fit.history['accuracy'])
     plt.plot(model_fit.history['val_accuracy'])

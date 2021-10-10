@@ -4,7 +4,10 @@ from tensorflow.python.keras import regularizers
 from keras.layers import Dropout, Flatten, Dense,BatchNormalization
 from keras.layers import Conv2D, MaxPooling2D
 
-# Binary classification, 3D CNN architecture that gave the best results. Because in case of 2D CNN (majority voting policy), we are actually using each of the 9 frames as an individual datapoint, the number of datapoints for this task are quite more than in the cases when we concatenate the 9 frames depthwise and use them together as a single image. Consequently, because of a resonable number of images to train, models tend to overfit less.
+'''Binary classification, 3D CNN architecture that gave the best results. Because in case of 2D CNN (majority voting policy), we are actually using each of the 9 
+frames as an individual datapoint, the number of datapoints for this task are quite more than in the cases when we concatenate the 9 frames depthwise and use them 
+together as a single image. Consequently, because of a resonable number of images to train, models tend to overfit less. Hence a deeper model was used as compared
+to it's 3D CNN counterpart. '''
 def load_model_binary():
     inputs = keras.Input((128, 128, 1))
 
@@ -26,7 +29,8 @@ def load_model_binary():
     model = keras.Model(inputs, outputs, name="2dcnn")
     return model
 
-# Multiclass classification is much more complex than binary classification, and even more so with the limited data we have at our disposal. Hence, a deeper network is required to learn the underlying patterns properly (especially with 2D CNNs that can't fathom the temporal relations between frames)
+'''Multiclass classification is much more complex than binary classification, and even more so with the limited data we have at our disposal. Hence, a deeper network 
+is required to learn the underlying patterns properly (especially with 2D CNNs that can't fathom the temporal relations between frames) '''
 def load_model_multiclass():
     inputs = keras.Input((128, 128, 1))
 
