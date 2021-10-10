@@ -7,7 +7,7 @@ from utils.common import get_next_three
 
 dir = "C:/Users/Shreyansh/Desktop/Microexpression Detection/SAMM/"
 
-# Returns 9 equidistant frames between onset frame to offset frame (including onset, apex and offset frames)
+# Returns 9 equidistant frames (including onset, apex and offset frames) between onset frame to offset frame
 def get_frames_3dcnn(i):      
     frames = []
     img_arr1 = img_to_array(load_img(dir + i[0], color_mode="grayscale", target_size=(128,128)))    # Onset frame
@@ -31,7 +31,7 @@ def get_frames_3dcnn(i):
 
 
 # Returns list of classes, with labels and the paths of corresponding 9 frames
-def get_classes_list_with_9frames_and_labels_2dcnn(classes, type):
+def get_classes_list_with_9frames_and_labels_2dimages_open(classes, type):
     if type=="multiclass":
         happiness = []
         surprise = []
@@ -99,7 +99,7 @@ def get_classes_list_with_9frames_and_labels_2dcnn(classes, type):
 
 
 # Divided the shuffled dataset into train (which is later divided into train and val), and test sets in a particular ratio and returns the shuffled sets.
-def get_train_test_list_2dcnn(classes, type):
+def get_train_test_list_2dimages_open(classes, type):
     if type=="multiclass":
         random.shuffle(classes[0])
         random.shuffle(classes[1])
@@ -210,8 +210,7 @@ def test_predictions(test_list, model, type="binary"):
     
     print((correct)/(correct+wrong))
 
-    if type=="multiclass":
-        
+    if type=="multiclass":  
         matrix = confusion_matrix(test_labels, test_pred, normalize='true')
         display_labels = ['Happiness','Surprise','Anger','Fear','Disgust','Comptempt','Sadness']
         disp = ConfusionMatrixDisplay(confusion_matrix=matrix, display_labels=display_labels)

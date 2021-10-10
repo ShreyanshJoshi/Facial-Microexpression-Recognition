@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from utils.augmentation import augment_3dimages_stacked
-from utils.common import plot_training_graphs, get_classes_list
+from utils.common import plot_training_graphs, get_classes_list, train_model
 from models._3dcnn import load_model_binary
 
 def main():
@@ -49,16 +49,19 @@ def main():
     model = load_model_binary()
     print(model.summary())
 
-    # Prepare for training
-    initial_learning_rate = 0.002
-    lr_schedule = keras.optimizers.schedules.ExponentialDecay(
-        initial_learning_rate, decay_steps=100000, decay_rate=0.96, staircase=True
-    )
-    model.compile(optimizer = keras.optimizers.Adam(learning_rate=lr_schedule), loss='sparse_categorical_crossentropy', metrics =['accuracy'])
+    # Storing training parameters
+    p = dict()
+    p['lr'] = 0.002
+    p['loss_function'] = 'sparse_categorical_crossentropy'
+    p['optimizer'] = keras.optimizers.Adam
+    p['metrics'] = ['accuracy']
+    p['epochs'] = 23
+    p['batch_size'] = 32
+    p['validation_batch_size'] = 32
 
-    # Training the model
-    model_fit = model.fit(trainX, trainY, epochs=25, batch_size=32, steps_per_epoch=len(trainX)//32, validation_data=(testX, testY))
+    model_fit = train_model(model, trainX, trainY, testX, testY, p)
 
+    # Plotting graphs of training and validation (both loss and accuracy), for visualization
     plot_training_graphs(model_fit)
 
 if __name__ == '__main__':

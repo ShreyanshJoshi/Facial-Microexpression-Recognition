@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from scipy.ndimage import rotate
 import tensorflow as tf
+from tensorflow import keras
 import matplotlib.pyplot as plt
 
 dir = "C:/Users/Shreyansh/Desktop/Microexpression Detection/SAMM/"
@@ -315,6 +316,21 @@ def get_classes_list(df, type):
     
     else:
         raise ValueError("Invalid argument")
+
+
+# Compiles, trains the model with the given hyperparameters and returns the trained model
+def train_model(model, trainX, trainY, valX, valY, p):
+    lr_schedule = keras.optimizers.schedules.ExponentialDecay(
+        p['lr'], decay_steps=100000, decay_rate=0.96, staircase=True
+    )
+
+    model.compile(optimizer = p['optimizer'](learning_rate=lr_schedule), loss=p['loss_function'], metrics=p['metrics'])
+
+    # Training the model
+    model_fit = model.fit(trainX, trainY, epochs=p['epochs'], batch_size=p['batch_size'], steps_per_epoch=len(trainX)//p['batch_size'], 
+    validation_data=(valX, valY), validation_batch_size=p['validation_batch_size'], validation_steps=len(valX)//p['validation_batch_size'])
+
+    return model_fit
 
 
 # Plots 2 plots after training, for both training and validation process -  epoch vs accuracy and epoch vs loss

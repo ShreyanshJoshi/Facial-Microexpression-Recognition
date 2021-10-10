@@ -7,10 +7,10 @@ import pandas as pd
 import numpy as np
 import random
 from sklearn.model_selection import train_test_split
-from utils.common import plot_training_graphs, get_classes_list
+from utils.common import plot_training_graphs, get_classes_list, train_model
 from models._2dcnn import load_model_binary
 from utils.augmentation import augment_2dimages_open
-from utils.miscellaneous import get_classes_list_with_9frames_and_labels_2dcnn, get_train_test_list_2dcnn, test_predictions
+from utils.miscellaneous import get_classes_list_with_9frames_and_labels_2dimages_open, get_train_test_list_2dimages_open, test_predictions
 
 def main():
     df = pd.read_csv(r'C:\Users\Shreyansh\Desktop\Microexpression Detection\samm_data.csv')
@@ -30,7 +30,7 @@ def main():
     # Printing a sample element of the returned list, to check the format
     print(positive[0])
 
-    output = get_classes_list_with_9frames_and_labels_2dcnn([positive, negative], "binary")
+    output = get_classes_list_with_9frames_and_labels_2dimages_open([positive, negative], "binary")
     positive1 = output[0]
     negative1 = output[1]
 
@@ -40,15 +40,15 @@ def main():
     print(np.array(negative1).shape)
 
     # Printing a sample element of the returned list, to check the format
-    print(negative1[0])
+    print(positive1[0])
     
-    output = get_train_test_list_2dcnn([positive1, negative1], "binary")
+    output = get_train_test_list_2dimages_open([positive1, negative1], "binary")
     train_list = output[0]
     test_list = output[1]
     print(len(train_list))
     print(len(test_list))
 
-    # Augmentation doesn't add value in this case as binary classification is intrinsically a not so difficult task and secondly, because we are treating each of the 9 frames of a datapoint individually in this case, we have 9 times the datapoints available for training (as compared to the cases when we stacked the 9 frames depthwise to produce a single 3D image). Adding augmentation only introduced redundancy in the dataset.
+    # Augmentation doesn't add value in this case as binary classification is intrinsically a not so difficult task and secondly, because we are treating each of the 9 frames of a datapoint individually in this case, we have 9 times the datapoints available for training (as compared to the cases when we stacked the 9 frames depthwise to produce a single 3D image). Adding augmentation only introduces redundancy in the dataset.
     output = augment_2dimages_open(train_list, "binary", augment=False)
     data = np.array(output[0])
     labels = np.array(output[1])
@@ -58,26 +58,28 @@ def main():
     print(np.unique(labels, return_counts=True))
 
     # Splitting the data into training and validation sets in the ratio 75:25
-    (trainX, testX, trainY, testY) = train_test_split(data, labels, test_size=0.25, stratify=labels, random_state=2)
+    (trainX, valX, trainY, valY) = train_test_split(data, labels, test_size=0.25, stratify=labels, random_state=2)
 
     print(trainX.shape)
-    print(testX.shape)
+    print(valX.shape)
     print(trainY.shape)
-    print(testY.shape)
+    print(valY.shape)
 
-    # Load model
+    # Load model architecture
     model = load_model_binary()
     print(model.summary())
 
-    # Prepare for training
-    initial_learning_rate = 0.0035
-    lr_schedule = keras.optimizers.schedules.ExponentialDecay(
-        initial_learning_rate, decay_steps=100000, decay_rate=0.96, staircase=True
-    )
-    model.compile(optimizer = keras.optimizers.Adam(learning_rate=lr_schedule), loss='sparse_categorical_crossentropy', metrics =['accuracy'])
+    # Storing training parameters
+    p = dict()
+    p['lr'] = 0.0035
+    p['loss_function'] = 'sparse_categorical_crossentropy'
+    p['optimizer'] = keras.optimizers.Adam
+    p['metrics'] = ['accuracy']
+    p['epochs'] = 25
+    p['batch_size'] = 128
+    p['validation_batch_size'] = 64
 
-    # Training the model
-    model_fit = model.fit(trainX, trainY, epochs=25, batch_size=32, steps_per_epoch=len(trainX)//32, validation_data=(testX, testY))
+    model_fit = train_model(model, trainX, trainY, valX, valY, p)
 
     plot_training_graphs(model_fit)
 

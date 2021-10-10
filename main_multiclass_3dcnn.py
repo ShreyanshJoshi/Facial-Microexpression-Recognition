@@ -8,7 +8,7 @@ import numpy as np
 from keras.utils import np_utils 
 from sklearn.model_selection import train_test_split
 from utils.augmentation import augment_3dimages_stacked
-from utils.common import plot_training_graphs, get_classes_list
+from utils.common import plot_training_graphs, get_classes_list, train_model
 from models._3dcnn import load_model_multiclass
 
 def main():
@@ -40,7 +40,7 @@ def main():
     print(labels.shape)
     print(np.unique(labels, return_counts=True))
 
-    labels = np_utils.to_categorical(labels, 7)         # OHE is essential in multi-class to avoid any unwanted assumptions between class numbers
+    labels = np_utils.to_categorical(labels, 7)         # OHE is essential in multi-class to avoid any unwarranted assumptions between class numbers
     
     # Splitting the data into training and validation sets in the ratio 80:20
     (trainX, testX, trainY, testY) = train_test_split(data, labels, test_size=0.2, stratify=labels, random_state=2)
@@ -54,16 +54,19 @@ def main():
     model = load_model_multiclass()
     print(model.summary())
 
-     # Prepare for training
-    initial_learning_rate = 0.004
-    lr_schedule = keras.optimizers.schedules.ExponentialDecay(
-        initial_learning_rate, decay_steps=100000, decay_rate=0.96, staircase=True
-    )
-    model.compile(optimizer = keras.optimizers.Adam(learning_rate=lr_schedule), loss='categorical_crossentropy', metrics =['accuracy'])
+    # Storing training parameters
+    p = dict()
+    p['lr'] = 0.004
+    p['loss_function'] = 'categorical_crossentropy'
+    p['optimizer'] = keras.optimizers.Adam
+    p['metrics'] = ['accuracy']
+    p['epochs'] = 40
+    p['batch_size'] = 32
+    p['validation_batch_size'] = 32
 
-    # Training the model
-    model_fit = model.fit(trainX, trainY, epochs=40, batch_size=32, steps_per_epoch=len(trainX)//32, validation_data=(testX, testY))
+    model_fit = train_model(model, trainX, trainY, testX, testY, p)
 
+    # Plotting graphs of training and validation (both loss and accuracy), for visualization
     plot_training_graphs(model_fit)
 
 

@@ -8,9 +8,9 @@ import numpy as np
 import random
 from keras.utils import np_utils
 from sklearn.model_selection import train_test_split
-from utils.common import plot_training_graphs, get_classes_list
+from utils.common import plot_training_graphs, get_classes_list, train_model
 from models._2dcnn import load_model_multiclass
-from utils.miscellaneous import get_classes_list_with_9frames_and_labels_2dcnn, get_train_test_list_2dcnn, test_predictions
+from utils.miscellaneous import get_classes_list_with_9frames_and_labels_2dimages_open, get_train_test_list_2dimages_open, test_predictions
 from utils.augmentation import augment_2dimages_open
 
 def main():
@@ -32,7 +32,7 @@ def main():
 
     print(len(happiness), ' ', len(surprise), ' ', len(anger), ' ', len(fear), ' ', len(disgust), ' ', len(contempt), ' ', len(sadness))
 
-    output = get_classes_list_with_9frames_and_labels_2dcnn([happiness, surprise, anger, fear, disgust, contempt, sadness], "multiclass")
+    output = get_classes_list_with_9frames_and_labels_2dimages_open([happiness, surprise, anger, fear, disgust, contempt, sadness], "multiclass")
     happiness1 = output[0]
     surprise1 = output[1]
     anger1 = output[2]
@@ -45,7 +45,7 @@ def main():
     print(np.array(anger1).shape)
     print(anger1[0])
 
-    output = get_train_test_list_2dcnn([happiness1, surprise1, anger1, fear1, disgust1, contempt1, sadness1], "multiclass")
+    output = get_train_test_list_2dimages_open([happiness1, surprise1, anger1, fear1, disgust1, contempt1, sadness1], "multiclass")
     train_list = output[0]
     test_list = output[1]
     print(len(train_list))
@@ -74,16 +74,18 @@ def main():
     model = load_model_multiclass()
     print(model.summary())
 
-    # Prepare for training
-    initial_learning_rate = 0.004
-    lr_schedule = keras.optimizers.schedules.ExponentialDecay(
-        initial_learning_rate, decay_steps=100000, decay_rate=0.8, staircase=True
-    )
-    model.compile(optimizer = keras.optimizers.Adam(learning_rate=lr_schedule), loss='categorical_crossentropy', metrics =['accuracy'])
+    # Storing training parameters
+    p = dict()
+    p['lr'] = 0.004
+    p['loss_function'] = 'categorical_crossentropy'
+    p['optimizer'] = keras.optimizers.Adam
+    p['metrics'] = ['accuracy']
+    p['epochs'] = 45
+    p['batch_size'] = 128
+    p['validation_batch_size'] = 64
 
-    # Training the model
-    model_fit = model.fit(trainX, trainY, epochs=1, batch_size=128, steps_per_epoch=len(trainX)//128, validation_data=(valX, valY), 
-                        validation_batch_size=64, validation_steps=len(valX)//64)
+    model_fit = train_model(model, trainX, trainY, valX, valY, p)
+
     plot_training_graphs(model_fit)
 
     # Making predictions and finding test accuracy
