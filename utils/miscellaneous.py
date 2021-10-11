@@ -222,7 +222,3 @@ def test_predictions(test_list, model, type="binary"):
 
         disp = disp.plot(include_values=True, cmap=plt.cm.Blues, ax=ax, xticks_rotation='horizontal')
         plt.show()
-
-
-
-

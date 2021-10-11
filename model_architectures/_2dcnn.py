@@ -1,6 +1,5 @@
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.python.keras import regularizers
 from keras.layers import Dropout, Flatten, Dense,BatchNormalization
 from keras.layers import Conv2D, MaxPooling2D
 

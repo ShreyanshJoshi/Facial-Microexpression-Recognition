@@ -1,5 +1,4 @@
 import tensorflow as tf
-import pandas as pd
 import numpy as np
 import random
 from keras.preprocessing.image import load_img, img_to_array

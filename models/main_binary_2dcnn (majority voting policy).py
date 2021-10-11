@@ -5,10 +5,12 @@ from tensorflow import keras
 from tensorflow.keras.preprocessing import image
 import pandas as pd
 import numpy as np
-import random
+import sys, os
+sys.path.append(os.path.abspath('..'))
+
 from sklearn.model_selection import train_test_split
 from utils.common import plot_training_graphs, get_classes_list, train_model
-from models._2dcnn import load_model_binary
+from model_architectures._2dcnn import load_model_binary
 from utils.augmentation import augment_2dimages_open
 from utils.miscellaneous import get_classes_list_with_9frames_and_labels_2dimages_open, get_train_test_list_2dimages_open, test_predictions
 

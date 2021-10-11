@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import pandas as pd
 from scipy.ndimage import rotate
 import tensorflow as tf
 from tensorflow import keras
