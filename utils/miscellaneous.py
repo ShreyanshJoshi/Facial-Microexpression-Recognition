@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
+from pandas.core import frame
 import numpy as np
+from numpy import newaxis
 import random
 from keras.preprocessing.image import load_img, img_to_array
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
@@ -8,7 +10,7 @@ from utils.common import get_next_three
 dir = "C:/Users/Shreyansh/Desktop/Microexpression Detection/SAMM/"
 
 '''Returns 9 equidistant frames (including onset, apex and offset frames) between onset frame to offset frame.'''
-def get_frames_3dcnn(i):      
+def get_frames_3dimages_helper(i):      
     frames = []
     img_arr1 = img_to_array(load_img(dir + i[0], color_mode="grayscale", target_size=(128,128)))    # Onset frame
 
@@ -30,8 +32,26 @@ def get_frames_3dcnn(i):
     return frames
 
 
+'''Returns a list of frames wherein each frame has a new added dimension. This is essential to get the frames in a particular shape after concatenating them
+depthwise.'''
+def get_frames_3dimages(frames, i):
+    frames.clear()
+    frames = get_frames_3dimages_helper(i)
+    frames[0] = frames[0][newaxis,:,:,:]
+    frames[1] = frames[1][newaxis,:,:,:]
+    frames[2] = frames[2][newaxis,:,:,:]
+    frames[3] = frames[3][newaxis,:,:,:]
+    frames[4] = frames[4][newaxis,:,:,:]
+    frames[5] = frames[5][newaxis,:,:,:]
+    frames[6] = frames[6][newaxis,:,:,:]
+    frames[7] = frames[7][newaxis,:,:,:]
+    frames[8] = frames[8][newaxis,:,:,:]
+
+    return frames
+
+
 '''Returns list of classes, with labels and the paths of corresponding 9 frames.'''
-def get_classes_list_with_9frames_and_labels_2dimages_open(classes, type):
+def get_classes_list_with_9frames_and_labels(classes, type):
     if type=="multiclass":
         happiness = []
         surprise = []
@@ -42,8 +62,8 @@ def get_classes_list_with_9frames_and_labels_2dimages_open(classes, type):
         sadness = []
 
         for i in classes[0]:
-            next_three = get_next_three(i[0], i[1])             # Add 3 equidistant frames between onset and apex (excluding both)
-            next_three1 = get_next_three(i[1], i[2])            # Add 3 equidistant frames between apex and offset (excluding both)
+            next_three = get_next_three(i[0], i[1])             
+            next_three1 = get_next_three(i[1], i[2])            
             happiness.append((0,(i[0],next_three[0],next_three[1],next_three[2],i[1],next_three1[0],next_three1[1],next_three1[2],i[2])))
 
         for i in classes[1]:
@@ -99,7 +119,7 @@ def get_classes_list_with_9frames_and_labels_2dimages_open(classes, type):
 
 
 '''Divides the shuffled dataset into train (which is later divided into train and val), and test sets in a particular ratio and returns the shuffled sets.'''
-def get_train_test_list_2dimages_open(classes, type):
+def get_train_test_list(classes, type):
     if type=="multiclass":
         random.shuffle(classes[0])
         random.shuffle(classes[1])
@@ -155,7 +175,7 @@ def get_train_test_list_2dimages_open(classes, type):
 helping analyze better the predictions model has made and how it can be improved. Since, this function is used in case of majority voting policy, predictions are 
 made on each of the 9 frames of an entry in the test set (in order from onset to offset). A particular entry in the test set is said to be correctly predicted by 
 our model only if it correctly predicts the class of majority, of the 9 frames (at least 5 correct) that the entry has.'''
-def test_predictions(test_list, model, type="binary"):
+def test_predictions_2dcnn(test_list, model, type="binary"):
     correct=0
     wrong=0
     
@@ -219,6 +239,5 @@ def test_predictions(test_list, model, type="binary"):
         disp = ConfusionMatrixDisplay(confusion_matrix=matrix, display_labels=display_labels)
 
         fig, ax = plt.subplots(figsize=(17, 6))
-
         disp = disp.plot(include_values=True, cmap=plt.cm.Blues, ax=ax, xticks_rotation='horizontal')
         plt.show()
