@@ -2,7 +2,6 @@ import os
 import numpy as np
 from scipy.ndimage import rotate
 import tensorflow as tf
-from tensorflow import keras
 from numpy import newaxis
 import matplotlib.pyplot as plt
 

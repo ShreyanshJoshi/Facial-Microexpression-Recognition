@@ -1,10 +1,11 @@
 import tensorflow as tf
-import numpy as np
 from tensorflow import keras
+import numpy as np
 from keras.utils import np_utils
 from sklearn.model_selection import StratifiedKFold, train_test_split
 from keras.callbacks import ReduceLROnPlateau
 
+'''Runs K-fold cross validation for a designated number of runs (default 3), and returns the average of accuracies and results at the end.'''
 def run_kfold_cv(data, labels, model, p, mode, runs=3):
     kfold = StratifiedKFold(n_splits=5, shuffle=True)
     avg_loss_across_runs = []

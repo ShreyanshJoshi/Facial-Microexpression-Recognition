@@ -30,7 +30,7 @@ def main():
     plt.imshow(img)
     
     if args.mode=="binary":
-        from model_architectures.binary_models import load_model_3dcnn, load_model_cnn_lstm, load_model_convlstm2d
+        from models.binary_models import load_model_3dcnn, load_model_cnn_lstm, load_model_convlstm2d
 
         output = get_classes_list(df, "binary")
         positive = output[0]
@@ -42,7 +42,7 @@ def main():
         output = augment_3dimages([positive, negative], "binary")
 
     elif args.mode=="multiclass":
-        from model_architectures.multiclass_models import load_model_3dcnn, load_model_cnn_lstm, load_model_convlstm2d
+        from models.multiclass_models import load_model_3dcnn, load_model_cnn_lstm, load_model_convlstm2d
 
         output = get_classes_list(df, "multiclass")
         happiness = output[0]

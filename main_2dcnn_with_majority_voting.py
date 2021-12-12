@@ -36,7 +36,7 @@ def main():
     plt.imshow(img)
 
     if args.mode=="binary":
-        from model_architectures.binary_models import load_model_2dcnn
+        from models.binary_models import load_model_2dcnn
         output = get_classes_list(df, "binary")
         positive = output[0]
         negative = output[1]
@@ -46,7 +46,7 @@ def main():
         output = get_train_test_list([output[0], output[1]], "binary")
     
     elif args.mode=="multiclass":
-        from model_architectures.multiclass_models import load_model_2dcnn
+        from models.multiclass_models import load_model_2dcnn
         output = get_classes_list(df, "multiclass")
         happiness = output[0]
         surprise = output[1]
